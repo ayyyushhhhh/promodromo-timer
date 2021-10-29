@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:promodromo/blocs/timer_bloc.dart';
+import 'package:promodromo/models/promodromo/timer_model.dart';
 import 'package:promodromo/models/session_model.dart';
 import 'package:promodromo/screens/home_screen.dart';
+import 'package:promodromo/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -15,13 +16,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Promodromo App',
-      theme: ThemeData.dark().copyWith(
-        canvasColor: Colors.black45,
-      ),
+      theme: ThemeData(
+          scaffoldBackgroundColor: scafoldColor, fontFamily: "Avenir Next"),
       home: MultiProvider(
         providers: [
-          Provider<WorkTimerBloc>(
-            create: (context) => WorkTimerBloc(),
+          ChangeNotifierProvider<TimerModel>(
+            create: (context) => TimerModel(),
           ),
           ChangeNotifierProvider(
             create: (context) => SessionModel(),
