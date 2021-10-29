@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class SessionModel extends ChangeNotifier {
-  final int _numSessions = 0;
+class SessionStats extends ChangeNotifier {
+  int _numSessions = 0;
 
-  int increaseNumSessions() {
-    return _numSessions + 1;
+  void updateSession() {
+    _numSessions = _numSessions + 1;
   }
 
   int get getNumSessions => _numSessions;

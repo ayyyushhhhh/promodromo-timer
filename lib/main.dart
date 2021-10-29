@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
             create: (context) => TimerModel(),
           ),
           ChangeNotifierProvider(
-            create: (context) => SessionModel(),
+            create: (context) => SessionStats(),
           ),
         ],
         child: const HomeScreen(),

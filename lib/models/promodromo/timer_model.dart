@@ -7,6 +7,7 @@ enum SessionType { workTime, breakTime }
 class TimerModel extends ChangeNotifier {
   Duration _duration = const Duration(seconds: 10);
   Timer? timer;
+  SessionType _sessionType = SessionType.workTime;
 
   void startTimer() {
     timer = Timer.periodic(
@@ -27,14 +28,48 @@ class TimerModel extends ChangeNotifier {
     return _duration;
   }
 
+  void startSession() {
+    _duration = const Duration(seconds: 10);
+    _sessionType = SessionType.workTime;
+  }
+
+  void skipSession() {
+    if (timer != null && timer!.isActive) {
+      _duration = const Duration(seconds: 10);
+      _sessionType = SessionType.workTime;
+      stopTimer();
+      notifyListeners();
+    } else if (timer != null && !timer!.isActive) {
+      _duration = const Duration(seconds: 10);
+      _sessionType = SessionType.workTime;
+      stopTimer();
+      notifyListeners();
+    }
+  }
+
   void startBreak() {
-    _duration = const Duration(minutes: 5);
-    notifyListeners();
+    _duration = const Duration(seconds: 5);
+    _sessionType = SessionType.breakTime;
+  }
+
+  SessionType get sessionType {
+    return _sessionType;
+  }
+
+  bool isBreakComplete() {
+    if (timer != null) {
+      if (timer!.isActive &&
+          _duration.inSeconds <= 0 &&
+          _sessionType == SessionType.breakTime) {
+        stopTimer();
+        return true;
+      }
+    }
+    return false;
   }
 
   bool isTimerActive() {
     if (timer != null) {
-      notifyListeners();
       return timer!.isActive;
     }
     return false;
@@ -42,7 +77,9 @@ class TimerModel extends ChangeNotifier {
 
   bool sessionComplete() {
     if (timer != null) {
-      if (timer!.isActive && _duration.inSeconds <= 0) {
+      if (timer!.isActive &&
+          _duration.inSeconds <= 0 &&
+          _sessionType == SessionType.workTime) {
         stopTimer();
         return true;
       }
@@ -52,6 +89,5 @@ class TimerModel extends ChangeNotifier {
 
   void stopTimer() {
     timer?.cancel();
-    notifyListeners();
   }
 }

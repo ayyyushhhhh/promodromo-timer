@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:promodromo/models/promodromo/timer_model.dart';
+import 'package:promodromo/models/session_model.dart';
 import 'package:promodromo/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -16,22 +17,37 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final session = Provider.of<SessionStats>(context, listen: false);
     return SafeArea(
       child: Scaffold(
         body: Container(
           padding: const EdgeInsets.all(10),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             // ignore: prefer_const_literals_to_create_immutables
             children: [
-              Text(
-                'Promodromo app',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  Text(
+                    'Promodromo app',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  IconButton(
+                    iconSize: 40,
+                    color: Colors.white,
+                    onPressed: () {},
+                    icon: const Icon(Icons.settings),
+                  ),
+                ],
               ),
               const SizedBox(height: 30),
               Container(
@@ -65,6 +81,9 @@ class HomeScreen extends StatelessWidget {
                   builder: (context, timerModel, child) {
                     if (timerModel.sessionComplete() == true) {
                       timerModel.startBreak();
+                      session.updateSession();
+                    } else if (timerModel.isBreakComplete() == true) {
+                      timerModel.startSession();
                     }
                     return Column(
                       children: [
@@ -73,24 +92,59 @@ class HomeScreen extends StatelessWidget {
                           style: TextStyle(fontSize: 60, color: textColor),
                         ),
                         const SizedBox(height: 10),
-                        IconButton(
-                          iconSize: 60,
-                          color: Colors.white,
-                          onPressed: () {
-                            if (timerModel.isTimerActive() == false) {
-                              timerModel.startTimer();
-                            } else {
-                              timerModel.stopTimer();
-                            }
-                          },
-                          icon: timerModel.isTimerActive()
-                              ? const Icon(Icons.pause)
-                              : const Icon(Icons.play_arrow),
-                        ),
+                        if (timerModel.sessionType == SessionType.workTime)
+                          IconButton(
+                            iconSize: 60,
+                            color: Colors.white,
+                            onPressed: () {
+                              if (timerModel.isTimerActive() == false) {
+                                timerModel.startTimer();
+                              } else {
+                                timerModel.stopTimer();
+                              }
+                            },
+                            icon: timerModel.isTimerActive()
+                                ? const Icon(Icons.pause)
+                                : const Icon(Icons.play_arrow),
+                          ),
+                        if (timerModel.sessionType == SessionType.breakTime)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                iconSize: 60,
+                                color: Colors.white,
+                                onPressed: () {
+                                  if (timerModel.isTimerActive() == false) {
+                                    timerModel.startTimer();
+                                  } else {
+                                    timerModel.stopTimer();
+                                  }
+                                },
+                                icon: timerModel.isTimerActive()
+                                    ? const Icon(Icons.pause)
+                                    : const Icon(Icons.play_arrow),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              IconButton(
+                                iconSize: 60,
+                                color: Colors.white,
+                                onPressed: () {
+                                  timerModel.skipSession();
+                                },
+                                icon: const Icon(Icons.arrow_forward_ios),
+                              ),
+                            ],
+                          )
                       ],
                     );
                   },
                 ),
+              ),
+              const SizedBox(
+                height: 30,
               ),
             ],
           ),
